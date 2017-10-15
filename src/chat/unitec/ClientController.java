@@ -18,7 +18,11 @@ import javafx.scene.control.ListView;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
+import javafx.scene.shape.Ellipse;
+import javafx.scene.shape.Line;
+import javafx.scene.shape.Rectangle;
 
 public class ClientController implements Runnable {
 	
@@ -26,6 +30,10 @@ public class ClientController implements Runnable {
 	DataInputStream dis;
 	DataOutputStream dos;
 	ObservableList<String> names = FXCollections.observableArrayList();
+	Color strokeColor = Color.BLACK;
+	String figure = "pen";
+	double initialX;
+	double initialY;
 	
 	@FXML
 	private ListView<String> lvUsers;
@@ -38,114 +46,6 @@ public class ClientController implements Runnable {
 
     @FXML
     private Button btnSend;
-    
-    @FXML
-    private Canvas myCanvas;
-    
-	@FXML
-    protected void initialize()
-	{
-		final GraphicsContext graphicsContext = myCanvas.getGraphicsContext2D();
-//    	Global.getInstance().connected.setCallback(this);
-//    	Global.getInstance().connected.send(7, "null", Global.getInstance().userName);
-//    	usersList.setItems(listItems);
-    	
-    		initDraw(graphicsContext);
-    	
-	    	myCanvas.addEventHandler(MouseEvent.MOUSE_PRESSED,
-	    		new EventHandler<MouseEvent>(){
-	
-	            @Override
-	            public void handle(MouseEvent event) {
-	            	graphicsContext.beginPath();
-	            	graphicsContext.moveTo(event.getX(), event.getY());
-	//            	graphicsContext.setStroke();
-	//            	startX = event.getX();
-	//            	startY = event.getY();
-	//            	if(action.equals("pen")){
-	            	graphicsContext.stroke();
-	        		try {
-	        			dos.writeInt(ServerConstants.CANVAS_BROADCAST);
-	        			dos.writeUTF("beginPath%"+event.getX()+"%"+event.getY());
-	        			dos.flush();
-	        		} catch (IOException e) {
-	        			e.printStackTrace();
-	        		}
-	            	
-	//            		Global.getInstance().connected.send(6, "start:" + drawColor+":"+ event.getX() + ":" + event.getY(), Global.getInstance().userName);
-	//	        	} else if(action.equals("zoom")){
-	//	        		myCanvas.setScaleX(2);
-	//	        		myCanvas.setScaleY(2);
-	//	        	} else if(action.equals("zoom-out")){
-	//	        		myCanvas.setScaleX(1);
-	//	        		myCanvas.setScaleY(1);
-	//	        	} else if(action.equals("rotate")){
-	//	        		
-	//	        	}
-	            }
-	        });
-	    	
-	    	myCanvas.addEventHandler(MouseEvent.MOUSE_DRAGGED, 
-	    		new EventHandler<MouseEvent>(){
-	
-	            @Override
-	            public void handle(MouseEvent event) {
-	            	graphicsContext.lineTo(event.getX(), event.getY());
-	//            	graphicsContext.setStroke(drawColor);
-	//            	if(action.equals("pen")){
-	//            		Global.getInstance().connected.send(6, "update:" + drawColor+":"+ event.getX() + ":" + event.getY(), Global.getInstance().userName);
-		        graphicsContext.stroke();
-	        		try {
-	        			dos.writeInt(ServerConstants.CANVAS_BROADCAST);
-	        			dos.writeUTF("lineTo%"+event.getX()+"%"+event.getY());
-	        			dos.flush();
-	        		} catch (IOException e) {
-	        			e.printStackTrace();
-	        		}
-	//            	} 
-	            }
-	        });
-	
-	    	myCanvas.addEventHandler(MouseEvent.MOUSE_RELEASED, 
-	                new EventHandler<MouseEvent>(){
-	
-	            @Override
-	            public void handle(MouseEvent event) {
-	//            	Global.getInstance().connected.send(6, "released:" + drawColor+":"+ startX + ":" + startY + ":" + action + ":" + event.getX() + ":" + event.getY(), Global.getInstance().userName);
-	//            	double endX = event.getX()-startX;
-	//            	endX =  endX<0?endX*-1:endX;
-	//            	double endY = event.getY()-startY;
-	//            	endY = endY<0?endY*-1:endY;
-	//            	if(action.equals("oval")){
-	//            		graphicsContext.strokeOval(event.getX(), event.getY(), endX , endY);
-	//            	} else if(action.equals("rect")){
-	//            		graphicsContext.strokeRect(event.getX(), event.getY(), endX , endY);
-	//            	} else if(action.equals("line")){
-	//            		graphicsContext.strokeLine(startX, startY, event.getX(), event.getY());
-	//            	} 
-	            }
-	        });
-	    	
-	//    	colorToggleGroup.selectedToggleProperty().addListener(new ChangeListener<Toggle>()
-	//        {
-	//	        @Override
-	//	        public void changed(ObservableValue<? extends Toggle> ov, Toggle t, Toggle t1)
-	//            {
-	//	        	RadioButton color = (RadioButton)t1.getToggleGroup().getSelectedToggle(); // Cast object to radio button
-	//	        	drawColor = drawColor.valueOf(color.getStyleClass().toString().split(" ")[1]);
-	//            }
-	//        });
-	    	
-	//    	actionToggleGroup.selectedToggleProperty().addListener(new ChangeListener<Toggle>()
-	//        {
-	//	        @Override
-	//	        public void changed(ObservableValue<? extends Toggle> ov, Toggle t, Toggle t1)
-	//            {
-	//	        	RadioButton actionRd = (RadioButton)t1.getToggleGroup().getSelectedToggle(); // Cast object to radio button
-	//	        	action = actionRd.getStyleClass().toString().split(" ")[1];
-	//            }
-	//        });
-    }
     
     @FXML
     void btnSendOnActionHandler(ActionEvent event) {
@@ -167,6 +67,276 @@ public class ClientController implements Runnable {
     void lvUsersOnMouseClickedHandler() {
     	String name = lvUsers.getSelectionModel().getSelectedItem();
     	tfSend.setText("@" + name + " ");
+    }  
+    
+    @FXML
+    private Button btnBlack;
+    
+    @FXML
+    void btnBlackOnActionHandler(ActionEvent event) {
+    		strokeColor = Color.BLACK;
+    }
+    
+    @FXML
+    private Button btnWhite;
+    
+    @FXML
+    void btnWhiteOnActionHandler(ActionEvent event) {
+    		strokeColor = Color.WHITE;
+    }
+    
+    @FXML
+    private Button btnRed;
+    
+    @FXML
+    void btnRedOnActionHandler(ActionEvent event) {
+    		strokeColor = Color.RED;
+    }
+    
+    @FXML
+    private Button btnGreen;
+    
+    @FXML
+    void btnGreenOnActionHandler(ActionEvent event) {
+    		strokeColor = Color.GREEN;
+    }
+    
+    @FXML
+    private Button btnYellow;
+    
+    @FXML
+    void btnYellowOnActionHandler(ActionEvent event) {
+    		strokeColor = Color.YELLOW;
+    }
+    
+    @FXML
+    private Button btnBlue;
+    
+    @FXML
+    void btnBlueOnActionHandler(ActionEvent event) {
+    		strokeColor = Color.BLUE;
+    }
+    
+    @FXML
+    private Button btnPen;
+    
+    @FXML
+    void btnPenOnActionHandler(ActionEvent event) {
+    		figure = "pen";
+    }
+    
+    @FXML
+    private Button btnOval;
+    
+    @FXML
+    void btnOvalOnActionHandler(ActionEvent event) {
+    		figure = "oval";
+    }
+    
+    @FXML
+    private Button btnLine;
+    
+    @FXML
+    void btnLineOnActionHandler(ActionEvent event) {
+    		figure = "line";
+    }
+    
+    @FXML
+    private Button btnRectangle;
+    
+    @FXML
+    void btnRectangleOnActionHandler(ActionEvent event) {
+    		figure = "rectangle";
+    }
+    
+    @FXML
+    private Canvas myCanvas;
+    
+    @FXML
+    private Pane paneCanvas;
+    
+	@FXML
+    protected void initialize()
+	{
+		final GraphicsContext graphicsContext = myCanvas.getGraphicsContext2D();
+		Ellipse ellipse = new Ellipse();
+		Rectangle rectangle = new Rectangle();
+		Line line = new Line();
+
+		
+    		initDraw(graphicsContext);
+    	
+	    	myCanvas.addEventHandler(MouseEvent.MOUSE_PRESSED,
+	    		new EventHandler<MouseEvent>(){
+	
+	            @Override
+	            public void handle(MouseEvent event)
+	            {
+		            	initialX = event.getX();
+		            	initialY = event.getY();
+		            	graphicsContext.setStroke(strokeColor);
+		            	if(figure.equals("pen"))
+		            	{
+			            	graphicsContext.beginPath();
+			            	graphicsContext.moveTo(initialX, initialY);			            	
+			            	graphicsContext.stroke();
+			        		try 
+			        		{
+			        			dos.writeInt(ServerConstants.CANVAS_BROADCAST);
+			        			dos.writeUTF("pressed%"+initialX+"%"+initialY+"%"+strokeColor+"%"+figure+"%"+event.getX()+"%"+event.getY());
+			        			dos.flush();
+			        		}
+			        		catch (IOException e)
+			        		{
+			        			e.printStackTrace();
+			        		}
+		        		}
+		            	else if(figure.equals("oval"))
+		            	{
+		            		ellipse.setStrokeWidth(1.0);
+		            		ellipse.setFill(Color.TRANSPARENT);
+		            		ellipse.setStroke(strokeColor);
+		            	    ellipse.setCenterX(initialX);
+		            	    ellipse.setCenterY(initialY);
+		            	    ellipse.setRadiusX(0);
+		            	    ellipse.setRadiusY(0);
+		            	    paneCanvas.getChildren().add(ellipse);
+		            	}
+		            	else if(figure.equals("line"))
+		            	{
+		            		line.setStrokeWidth(1.0);
+		            		line.setStroke(strokeColor);
+		            		line.setStartX(initialX);
+		            		line.setStartY(initialY);
+		            	    line.setEndX(initialX);
+		            	    line.setEndY(initialY);
+		            	    paneCanvas.getChildren().add(line);
+		            	}
+		            	else if(figure.equals("rectangle"))
+		            	{
+		            		rectangle.setStrokeWidth(1.0);
+		            		rectangle.setFill(Color.TRANSPARENT);
+		            		rectangle.setStroke(strokeColor);
+		            		rectangle.setX(initialX);
+		            		rectangle.setY(initialY);
+		            	    rectangle.setWidth(0);
+		            	    rectangle.setHeight(0);
+		            	    paneCanvas.getChildren().add(rectangle);
+		            	}
+		            	
+	//	            	else if(action.equals("zoom"))
+	//	            	{
+	//		        		myCanvas.setScaleX(2);
+	//		        		myCanvas.setScaleY(2);
+	//		        	}
+	//	            	else if(action.equals("zoom-out"))
+	//	            	{
+	//		        		myCanvas.setScaleX(1);
+	//		        		myCanvas.setScaleY(1);
+	//		        	}
+	//	            	else if(action.equals("rotate"))
+	//	            	{
+	//		        		
+	//		        	}
+	            }
+	    		});
+	    	
+	    	myCanvas.addEventHandler(MouseEvent.MOUSE_DRAGGED, 
+	    		new EventHandler<MouseEvent>(){
+	
+	            @Override
+	            public void handle(MouseEvent event)
+	            {
+		           	if(figure.equals("pen"))
+		           	{
+		            		graphicsContext.lineTo(event.getX(), event.getY());
+				        graphicsContext.stroke();
+			        		try 
+			        		{
+			        			dos.writeInt(ServerConstants.CANVAS_BROADCAST);
+			        			dos.writeUTF("dragged%"+initialX+"%"+initialY+"%"+strokeColor+"%"+figure+"%"+event.getX()+"%"+event.getY());
+			        			dos.flush();
+			        		}
+			        		catch (IOException e)
+			        		{
+			        			e.printStackTrace();
+			        		}
+		           	} 
+		           	else if(figure.equals("oval"))
+		           	{
+		           		ellipse.setCenterX((event.getX() + initialX) / 2);
+		           		ellipse.setCenterY((event.getY() + initialY) / 2);
+		           		ellipse.setRadiusX(Math.abs((event.getX() - initialX) / 2));
+		           		ellipse.setRadiusY(Math.abs((event.getY() - initialY) / 2));	
+		           	}
+		            	else if(figure.equals("line"))
+		            	{
+		            	    line.setEndX(event.getX());
+		            	    line.setEndY(event.getY());
+		            	}
+		           	else if(figure.equals("rectangle"))
+		           	{
+		           		rectangle.setX(Math.min(initialX, event.getX()));
+		           		rectangle.setY(Math.min(initialY, event.getY()));
+		           		rectangle.setWidth(Math.abs(event.getX() - initialX));
+		           		rectangle.setHeight(Math.abs(event.getY() - initialY));
+		           	}
+	            }
+	        });
+	
+	    	myCanvas.addEventHandler(MouseEvent.MOUSE_RELEASED, 
+	                new EventHandler<MouseEvent>(){
+	
+	            @Override
+	            public void handle(MouseEvent event)
+	            {
+	            	 double width = Math.abs(event.getX() - initialX);
+	            	 double height = Math.abs(event.getY() - initialY);
+		            	
+		            	if(figure.equals("oval"))
+		            	{
+		            		paneCanvas.getChildren().remove(ellipse);
+			            	graphicsContext.strokeOval(Math.min(initialX, event.getX()), Math.min(initialY, event.getY()), width, height);
+			        		try {
+			        			dos.writeInt(ServerConstants.CANVAS_BROADCAST);
+			        			dos.writeUTF("released%"+initialX+"%"+initialY+"%"+strokeColor+"%"+figure+"%"+event.getX()+"%"+event.getY());
+			        			dos.flush();
+			        		}
+			        		catch (IOException e)
+			        		{
+			        			e.printStackTrace();
+			        		}
+		            	}
+		            	else if(figure.equals("line"))
+		            	{
+		            		paneCanvas.getChildren().remove(line);
+		            		graphicsContext.strokeLine(initialX, initialY, event.getX(), event.getY());
+			        		try {
+			        			dos.writeInt(ServerConstants.CANVAS_BROADCAST);
+			        			dos.writeUTF("released%"+initialX+"%"+initialY+"%"+strokeColor+"%"+figure+"%"+event.getX()+"%"+event.getY());
+			        			dos.flush();
+			        		}
+			        		catch (IOException e)
+			        		{
+			        			e.printStackTrace();
+			        		}
+		            	}
+		            	else if(figure.equals("rectangle"))
+		            	{
+		            		paneCanvas.getChildren().remove(rectangle);
+		            		graphicsContext.strokeRect(Math.min(initialX, event.getX()), Math.min(initialY, event.getY()), width , height);
+			        		try {
+			        			dos.writeInt(ServerConstants.CANVAS_BROADCAST);
+			        			dos.writeUTF("released%"+initialX+"%"+initialY+"%"+strokeColor+"%"+figure+"%"+event.getX()+"%"+event.getY());
+			        			dos.flush();
+			        		}
+			        		catch (IOException e)
+			        		{
+			        			e.printStackTrace();
+			        		}
+		            	}
+	            }
+	        });
     }
     
     public ClientController() {
@@ -217,19 +387,54 @@ public class ClientController implements Runnable {
 						break;
 					case ServerConstants.CANVAS_BROADCAST:
 						GraphicsContext graphicsContext = myCanvas.getGraphicsContext2D();
+
 						String[] canvasChange = dis.readUTF().split("%");
-		            		if(canvasChange[0].equals("beginPath"))
+						String recAction = canvasChange[0];
+						Double recInitialX = Double.parseDouble(canvasChange[1]);
+						Double recInitialY = Double.parseDouble(canvasChange[2]);
+						Color recColor = Color.valueOf(canvasChange[3]);
+						String recFigure = canvasChange[4];
+						Double recFinalX = Double.parseDouble(canvasChange[5]);
+						Double recFinalY = Double.parseDouble(canvasChange[6]);
+						
+    	    					graphicsContext.setStroke(recColor);
+		            		if(recAction.equals("pressed"))
 		            		{
-		            			graphicsContext.beginPath();
-		        	    			graphicsContext.moveTo(Double.parseDouble(canvasChange[1]), Double.parseDouble(canvasChange[2]));
-		        	    			graphicsContext.stroke();
+		            			if(recFigure.equals("pen"))
+		    		            	{
+		    			            	graphicsContext.beginPath();
+		    			            	graphicsContext.moveTo(recInitialX, recInitialY);			            	
+		    			            	graphicsContext.stroke();
+		    		        		}
+
 		            		}
-		            		else if(canvasChange[0].equals("lineTo"))
+		            		else if(recAction.equals("dragged"))
 		            		{
-		            			graphicsContext.lineTo(Double.parseDouble(canvasChange[1]), Double.parseDouble(canvasChange[2]));
-		            			graphicsContext.stroke();
-		            		} 
-						break;
+		            			if(recFigure.equals("pen"))
+		    		           	{
+		    		            		graphicsContext.lineTo(recFinalX, recFinalY);
+		    				        graphicsContext.stroke();
+		    		           	} 
+		            		}
+		            		else if(recAction.equals("released"))
+		            		{
+		            			double width = Math.abs(recFinalX - recInitialX);
+		   	            	 	double height = Math.abs(recFinalY - recInitialY);
+		   		            	
+		   		            	if(recFigure.equals("oval"))
+		   		            	{
+		   			            	graphicsContext.strokeOval(Math.min(recInitialX, recFinalX), Math.min(recInitialY, recFinalY), width, height);
+		   		            	}
+		   		            	else if(recFigure.equals("line"))
+		   		            	{
+		   		            		graphicsContext.strokeLine(recInitialX, recInitialY, recFinalX, recFinalY);
+		   		            	}
+		   		            	else if(recFigure.equals("rectangle"))
+		   		            	{
+		   		            		graphicsContext.strokeRect(Math.min(recInitialX, recFinalX), Math.min(recInitialY, recFinalY), width , height);
+		   		            	}
+		            		}
+		            		break;
 				}
 			}
 			catch (IOException e)
@@ -240,8 +445,8 @@ public class ClientController implements Runnable {
 	}
 	
     private void initDraw(GraphicsContext gc){
-        double canvasWidth = gc.getCanvas().getWidth();
-        double canvasHeight = gc.getCanvas().getHeight();
+//        double canvasWidth = gc.getCanvas().getWidth();
+//        double canvasHeight = gc.getCanvas().getHeight();
         
 //        gc.setFill(Color.LIGHTGRAY);
 //        gc.setStroke(Color.BLACK);
@@ -254,9 +459,8 @@ public class ClientController implements Runnable {
 //                canvasWidth,    //width of the rectangle
 //                canvasHeight);  //height of the rectangle
         
-        gc.setFill(Color.RED);
-        gc.setStroke(Color.BLUE);
-        gc.setLineWidth(1);
-        
+        gc.setFill(Color.BLACK);
+        gc.setStroke(Color.BLACK);
+        gc.setLineWidth(1);        
     }
 }

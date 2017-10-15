@@ -1,15 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.geometry.Insets?>
 <?import javafx.scene.canvas.Canvas?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.ListView?>
 <?import javafx.scene.control.TextArea?>
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.BorderPane?>
-<?import javafx.scene.layout.ColumnConstraints?>
-<?import javafx.scene.layout.GridPane?>
 <?import javafx.scene.layout.HBox?>
-<?import javafx.scene.layout.RowConstraints?>
+<?import javafx.scene.layout.Pane?>
 <?import javafx.scene.layout.VBox?>
 
 <BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1" fx:controller="chat.unitec.ClientController">
@@ -30,19 +29,53 @@
       </VBox>
    </bottom>
    <right>
-      <GridPane prefHeight="304.0" prefWidth="82.0" BorderPane.alignment="CENTER">
-        <columnConstraints>
-          <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
-          <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
-        </columnConstraints>
-        <rowConstraints>
-          <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-          <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-          <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-        </rowConstraints>
-      </GridPane>
+      <VBox prefHeight="200.0" prefWidth="100.0" style="-fx-background-color: lightgray;" BorderPane.alignment="CENTER">
+         <children>
+            <HBox prefHeight="38.0" prefWidth="100.0">
+               <children>
+                  <Button fx:id="btnBlack" alignment="CENTER" mnemonicParsing="false" onAction="#btnBlackOnActionHandler" prefHeight="35.0" prefWidth="35.0" style="-fx-background-color: black;" />
+                  <Button fx:id="btnWhite" mnemonicParsing="false" onAction="#btnWhiteOnActionHandler" prefHeight="35.0" prefWidth="35.0" style="-fx-background-color: white;" />
+                  <Button fx:id="btnRed" mnemonicParsing="false" onAction="#btnRedOnActionHandler" prefHeight="35.0" prefWidth="35.0" style="-fx-background-color: red;" />
+               </children>
+            </HBox>
+            <HBox prefHeight="38.0" prefWidth="100.0">
+               <children>
+                  <Button fx:id="btnGreen" mnemonicParsing="false" onAction="#btnGreenOnActionHandler" prefHeight="35.0" prefWidth="35.0" style="-fx-background-color: green;" />
+                  <Button fx:id="btnYellow" mnemonicParsing="false" onAction="#btnYellowOnActionHandler" prefHeight="35.0" prefWidth="35.0" style="-fx-background-color: yellow;" />
+                  <Button fx:id="btnBlue" mnemonicParsing="false" onAction="#btnBlueOnActionHandler" prefHeight="35.0" prefWidth="35.0" style="-fx-background-color: blue;" />
+               </children>
+            </HBox>
+            <HBox prefHeight="49.0" prefWidth="100.0">
+               <children>
+                  <Button fx:id="btnPen" mnemonicParsing="false" onAction="#btnPenOnActionHandler" prefHeight="45.0" prefWidth="45.0" style="-fx-background-image: url('pen.png'); -fx-background-size: cover, auto;">
+                     <HBox.margin>
+                        <Insets left="3.0" right="4.0" />
+                     </HBox.margin>
+                  </Button>
+                  <Button fx:id="btnOval" mnemonicParsing="false" onAction="#btnOvalOnActionHandler" prefHeight="45.0" prefWidth="45.0" style="-fx-background-image: url('oval.png'); -fx-background-size: cover, auto;" />
+               </children>
+               <VBox.margin>
+                  <Insets />
+               </VBox.margin>
+            </HBox>
+            <HBox prefHeight="100.0" prefWidth="200.0">
+               <children>
+                  <Button fx:id="btnLine" mnemonicParsing="false" onAction="#btnLineOnActionHandler" prefHeight="45.0" prefWidth="45.0" style="-fx-background-image: url('line.png'); -fx-background-size: cover, auto;">
+                     <HBox.margin>
+                        <Insets left="3.0" right="4.0" />
+                     </HBox.margin>
+                  </Button>
+                  <Button fx:id="btnRectangle" mnemonicParsing="false" onAction="#btnRectangleOnActionHandler" prefHeight="45.0" prefWidth="45.0" style="-fx-background-image: url('rectangle.png'); -fx-background-size: cover, auto;" />
+               </children>
+            </HBox>
+         </children>
+      </VBox>
    </right>
    <center>
-      <Canvas fx:id="myCanvas" height="307.0" width="397.0" BorderPane.alignment="CENTER" />
+      <Pane fx:id="paneCanvas" BorderPane.alignment="CENTER">
+         <children>
+            <Canvas fx:id="myCanvas" height="307.0" width="376.0" />
+         </children>
+      </Pane>
    </center>
 </BorderPane>
