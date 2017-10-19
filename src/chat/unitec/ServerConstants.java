@@ -9,4 +9,6 @@ public class ServerConstants
 	public static final int REGISTER_CLIENT = 4;
 	public static final int REGISTER_BROADCAST = 5;
 	public static final int CANVAS_BROADCAST = 6;
+	public static final int CLEAR_BROADCAST = 7;
+	public static final int IMAGE_BROADCAST = 8;
 }

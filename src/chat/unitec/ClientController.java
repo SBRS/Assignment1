@@ -14,9 +14,17 @@ import javafx.fxml.FXML;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.Button;
+import javafx.scene.control.ContextMenu;
 import javafx.scene.control.ListView;
+import javafx.scene.control.MenuItem;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
+import javafx.scene.image.Image;
+import javafx.scene.image.PixelFormat;
+import javafx.scene.image.PixelWriter;
+import javafx.scene.image.WritableImage;
+import javafx.scene.input.Clipboard;
+import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
@@ -118,6 +126,30 @@ public class ClientController implements Runnable {
     }
     
     @FXML
+    private Button btnOrange;
+    
+    @FXML
+    void btnOrangeOnActionHandler(ActionEvent event) {
+    		strokeColor = Color.ORANGE;
+    }
+    
+    @FXML
+    private Button btnLightBlue;
+    
+    @FXML
+    void btnLightBlueOnActionHandler(ActionEvent event) {
+    		strokeColor = Color.LIGHTBLUE;
+    }
+    
+    @FXML
+    private Button btnPurple;
+    
+    @FXML
+    void btnPurpleOnActionHandler(ActionEvent event) {
+    		strokeColor = Color.PURPLE;
+    }
+    
+    @FXML
     private Button btnPen;
     
     @FXML
@@ -150,6 +182,9 @@ public class ClientController implements Runnable {
     }
     
     @FXML
+    private Button btnCanvasClear;
+    
+    @FXML
     private Canvas myCanvas;
     
     @FXML
@@ -162,10 +197,79 @@ public class ClientController implements Runnable {
 		Ellipse ellipse = new Ellipse();
 		Rectangle rectangle = new Rectangle();
 		Line line = new Line();
-
 		
     		initDraw(graphicsContext);
-    	
+    		
+    		//Clear Canvas
+        btnCanvasClear.addEventHandler(MouseEvent.MOUSE_CLICKED,
+                new EventHandler<MouseEvent>() {
+                    @Override
+                    public void handle(MouseEvent e)
+                    {
+                    		graphicsContext.clearRect(0, 0, myCanvas.getWidth(), myCanvas.getHeight());
+			        		try 
+			        		{
+			        			dos.writeInt(ServerConstants.CLEAR_BROADCAST);
+			        			dos.flush();
+			        		}
+			        		catch (IOException ex)
+			        		{
+			        			ex.printStackTrace();
+			        		}
+                    }
+                });
+    		//Insert Image from context menu
+        MenuItem it = new MenuItem("Paste");
+        it.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent t) 
+            {
+                Image img = Clipboard.getSystemClipboard().getImage();
+                if (img != null) 
+                {
+                    graphicsContext.drawImage(img, 0, 0);
+                        
+                    int w = (int)img.getWidth();
+                    int h = (int)img.getHeight();
+
+                    byte[] buf = new byte[w*h*4];
+
+                    img.getPixelReader().getPixels(0, 0, w, h, PixelFormat.getByteBgraInstance(), buf, 0, w*4);
+		      		try 
+		        		{
+		        			dos.writeInt(ServerConstants.IMAGE_BROADCAST);
+		        			dos.writeInt(w);
+		        			dos.writeInt(h);
+		        			dos.writeInt(buf.length);
+		        			for(int i=0;i<buf.length;i++)
+		        			{
+		        			    dos.writeByte(buf[i]);
+		        			}
+			        			dos.flush();
+			        		}
+			        		catch (IOException e)
+			        		{
+			        			e.printStackTrace();
+			        		}
+                    }
+                }
+            });
+        final ContextMenu cm = new ContextMenu();
+        cm.getItems().add(it);
+
+        //Show context menu
+        myCanvas.addEventHandler(MouseEvent.MOUSE_CLICKED,
+                new EventHandler<MouseEvent>() {
+                    @Override
+                    public void handle(MouseEvent e) {
+                        if (e.getButton() == MouseButton.SECONDARY) 
+                        {
+                        		cm.show(myCanvas, e.getScreenX(), e.getScreenY());
+                        }
+                    }
+                });
+        
+        //Drawing and sending figures on mouse actions
 	    	myCanvas.addEventHandler(MouseEvent.MOUSE_PRESSED,
 	    		new EventHandler<MouseEvent>(){
 	
@@ -223,24 +327,10 @@ public class ClientController implements Runnable {
 		            	    rectangle.setHeight(0);
 		            	    paneCanvas.getChildren().add(rectangle);
 		            	}
-		            	
-	//	            	else if(action.equals("zoom"))
-	//	            	{
-	//		        		myCanvas.setScaleX(2);
-	//		        		myCanvas.setScaleY(2);
-	//		        	}
-	//	            	else if(action.equals("zoom-out"))
-	//	            	{
-	//		        		myCanvas.setScaleX(1);
-	//		        		myCanvas.setScaleY(1);
-	//		        	}
-	//	            	else if(action.equals("rotate"))
-	//	            	{
-	//		        		
-	//		        	}
 	            }
 	    		});
 	    	
+	    	//Drawing and sending figures on mouse actions
 	    	myCanvas.addEventHandler(MouseEvent.MOUSE_DRAGGED, 
 	    		new EventHandler<MouseEvent>(){
 	
@@ -283,7 +373,8 @@ public class ClientController implements Runnable {
 		           	}
 	            }
 	        });
-	
+	    	
+	    	//Drawing and sending figures on mouse actions
 	    	myCanvas.addEventHandler(MouseEvent.MOUSE_RELEASED, 
 	                new EventHandler<MouseEvent>(){
 	
@@ -385,6 +476,8 @@ public class ClientController implements Runnable {
 							}
 						});
 						break;
+					
+					//Receiving from server and drawing figures 
 					case ServerConstants.CANVAS_BROADCAST:
 						GraphicsContext graphicsContext = myCanvas.getGraphicsContext2D();
 
@@ -435,6 +528,28 @@ public class ClientController implements Runnable {
 		   		            	}
 		            		}
 		            		break;
+					case ServerConstants.IMAGE_BROADCAST:
+						GraphicsContext gc = myCanvas.getGraphicsContext2D();
+						int w = dis.readInt();
+						int h = dis.readInt();
+						int length = dis.readInt();
+						byte[] pixels = new byte[w*h*4];	
+						for(int i=0;i<length;i++){
+						    pixels[i]=dis.readByte();
+						}
+						Platform.runLater(new Runnable() {
+							@Override public void run() {
+								WritableImage img = new WritableImage(w, h);
+								PixelWriter pw = img.getPixelWriter();
+								pw.setPixels(0, 0, w, h, PixelFormat.getByteBgraInstance(), pixels, 0, w*4); 
+			                     gc.drawImage(img, 0, 0);
+							}
+						});
+						break;
+					case ServerConstants.CLEAR_BROADCAST:
+						GraphicsContext grCont = myCanvas.getGraphicsContext2D();
+						grCont.clearRect(0, 0, myCanvas.getWidth(), myCanvas.getHeight());
+						break;
 				}
 			}
 			catch (IOException e)
@@ -444,21 +559,7 @@ public class ClientController implements Runnable {
 		}
 	}
 	
-    private void initDraw(GraphicsContext gc){
-//        double canvasWidth = gc.getCanvas().getWidth();
-//        double canvasHeight = gc.getCanvas().getHeight();
-        
-//        gc.setFill(Color.LIGHTGRAY);
-//        gc.setStroke(Color.BLACK);
-//        gc.setLineWidth(5);
-//
-//        gc.fill();
-//        gc.strokeRect(
-//                0,              //x of the upper left corner
-//                0,              //y of the upper left corner
-//                canvasWidth,    //width of the rectangle
-//                canvasHeight);  //height of the rectangle
-        
+    private void initDraw(GraphicsContext gc){  
         gc.setFill(Color.BLACK);
         gc.setStroke(Color.BLACK);
         gc.setLineWidth(1);        

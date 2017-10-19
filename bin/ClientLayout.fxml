@@ -11,70 +11,114 @@
 <?import javafx.scene.layout.Pane?>
 <?import javafx.scene.layout.VBox?>
 
-<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1" fx:controller="chat.unitec.ClientController">
+<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="700.0" prefWidth="1050.0" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1" fx:controller="chat.unitec.ClientController">
    <left>
       <ListView fx:id="lvUsers" onMouseClicked="#lvUsersOnMouseClickedHandler" prefHeight="306.0" prefWidth="123.0" BorderPane.alignment="CENTER" />
    </left>
    <bottom>
       <VBox prefHeight="94.0" prefWidth="600.0" BorderPane.alignment="CENTER">
          <children>
-            <TextArea fx:id="taChat" prefHeight="181.0" prefWidth="600.0" />
+            <HBox prefHeight="67.0" prefWidth="971.0">
+               <children>
+                  <TextArea fx:id="taChat" prefHeight="181.0" prefWidth="600.0">
+                     <HBox.margin>
+                        <Insets right="50.0" />
+                     </HBox.margin>
+                  </TextArea>
+                  <HBox prefHeight="67.0" prefWidth="359.0">
+                     <children>
+                        <Button fx:id="btnPen" mnemonicParsing="false" onAction="#btnPenOnActionHandler" prefHeight="55.0" prefWidth="55.0" style="-fx-background-image: url('pen.png'); -fx-background-size: cover, auto;">
+                           <HBox.margin>
+                              <Insets left="1.0" right="14.0" />
+                           </HBox.margin>
+                        </Button>
+                        <Button fx:id="btnOval" mnemonicParsing="false" onAction="#btnOvalOnActionHandler" prefHeight="55.0" prefWidth="55.0" style="-fx-background-image: url('oval.png'); -fx-background-size: cover, auto;">
+                           <HBox.margin>
+                              <Insets right="14.0" />
+                           </HBox.margin>
+                        </Button>
+                        <Button fx:id="btnLine" mnemonicParsing="false" onAction="#btnLineOnActionHandler" prefHeight="55.0" prefWidth="55.0" style="-fx-background-image: url('line.png'); -fx-background-size: cover, auto;">
+                           <HBox.margin>
+                              <Insets right="14.0" />
+                           </HBox.margin>
+                        </Button>
+                        <Button fx:id="btnRectangle" mnemonicParsing="false" onAction="#btnRectangleOnActionHandler" prefHeight="55.0" prefWidth="55.0" style="-fx-background-image: url('rectangle.png'); -fx-background-size: cover, auto;">
+                           <HBox.margin>
+                              <Insets right="14.0" />
+                           </HBox.margin>
+                        </Button>
+                        <Button fx:id="btnCanvasClear" mnemonicParsing="false" prefHeight="55.0" prefWidth="55.0" style="-fx-background-image: url('bin.png'); -fx-background-size: cover, auto;" />
+                     </children>
+                  </HBox>
+               </children>
+               <VBox.margin>
+                  <Insets bottom="5.0" />
+               </VBox.margin>
+            </HBox>
             <HBox prefHeight="26.0" prefWidth="600.0">
                <children>
                   <TextField fx:id="tfSend" prefHeight="13.0" prefWidth="545.0" />
-                  <Button fx:id="btnSend" mnemonicParsing="false" onAction="#btnSendOnActionHandler" text="SEND" />
+                  <Button fx:id="btnSend" mnemonicParsing="false" onAction="#btnSendOnActionHandler" text="SEND">
+                     <HBox.margin>
+                        <Insets right="35.0" />
+                     </HBox.margin></Button>
+                  <HBox prefHeight="32.0" prefWidth="363.0">
+                     <children>
+                        <Button fx:id="btnBlack" alignment="CENTER" mnemonicParsing="false" onAction="#btnBlackOnActionHandler" prefHeight="35.0" prefWidth="35.0" style="-fx-background-color: black;">
+                           <HBox.margin>
+                              <Insets bottom="5.0" right="7.0" />
+                           </HBox.margin>
+                        </Button>
+                        <Button fx:id="btnWhite" mnemonicParsing="false" onAction="#btnWhiteOnActionHandler" prefHeight="35.0" prefWidth="35.0" style="-fx-background-color: white;">
+                           <HBox.margin>
+                              <Insets bottom="5.0" right="7.0" />
+                           </HBox.margin>
+                        </Button>
+                        <Button fx:id="btnRed" mnemonicParsing="false" onAction="#btnRedOnActionHandler" prefHeight="27.0" prefWidth="31.0" style="-fx-background-color: red;">
+                           <HBox.margin>
+                              <Insets bottom="5.0" right="7.0" />
+                           </HBox.margin>
+                        </Button>
+                        <Button fx:id="btnGreen" mnemonicParsing="false" onAction="#btnGreenOnActionHandler" prefHeight="35.0" prefWidth="35.0" style="-fx-background-color: green;">
+                           <HBox.margin>
+                              <Insets bottom="5.0" right="7.0" />
+                           </HBox.margin>
+                        </Button>
+                        <Button fx:id="btnYellow" mnemonicParsing="false" onAction="#btnYellowOnActionHandler" prefHeight="35.0" prefWidth="35.0" style="-fx-background-color: yellow;">
+                           <HBox.margin>
+                              <Insets bottom="5.0" right="7.0" />
+                           </HBox.margin>
+                        </Button>
+                        <Button fx:id="btnBlue" mnemonicParsing="false" onAction="#btnBlueOnActionHandler" prefHeight="35.0" prefWidth="35.0" style="-fx-background-color: blue;">
+                           <HBox.margin>
+                              <Insets bottom="5.0" right="7.0" />
+                           </HBox.margin>
+                        </Button>
+                        <Button fx:id="btnOrange" mnemonicParsing="false" onAction="#btnOrangeOnActionHandler" prefHeight="35.0" prefWidth="35.0" style="-fx-background-color: orange;">
+                           <HBox.margin>
+                              <Insets bottom="5.0" right="7.0" />
+                           </HBox.margin>
+                        </Button>
+                        <Button fx:id="btnLightBlue" mnemonicParsing="false" onAction="#btnLightBlueOnActionHandler" prefHeight="35.0" prefWidth="35.0" style="-fx-background-color: lightblue;">
+                           <HBox.margin>
+                              <Insets bottom="5.0" right="7.0" />
+                           </HBox.margin>
+                        </Button>
+                        <Button fx:id="btnPurple" mnemonicParsing="false" onAction="#btnPurpleOnActionHandler" prefHeight="35.0" prefWidth="35.0" style="-fx-background-color: purple;">
+                           <HBox.margin>
+                              <Insets bottom="5.0" />
+                           </HBox.margin></Button>
+                     </children>
+                  </HBox>
                </children>
             </HBox>
          </children>
       </VBox>
    </bottom>
-   <right>
-      <VBox prefHeight="200.0" prefWidth="100.0" style="-fx-background-color: lightgray;" BorderPane.alignment="CENTER">
-         <children>
-            <HBox prefHeight="38.0" prefWidth="100.0">
-               <children>
-                  <Button fx:id="btnBlack" alignment="CENTER" mnemonicParsing="false" onAction="#btnBlackOnActionHandler" prefHeight="35.0" prefWidth="35.0" style="-fx-background-color: black;" />
-                  <Button fx:id="btnWhite" mnemonicParsing="false" onAction="#btnWhiteOnActionHandler" prefHeight="35.0" prefWidth="35.0" style="-fx-background-color: white;" />
-                  <Button fx:id="btnRed" mnemonicParsing="false" onAction="#btnRedOnActionHandler" prefHeight="35.0" prefWidth="35.0" style="-fx-background-color: red;" />
-               </children>
-            </HBox>
-            <HBox prefHeight="38.0" prefWidth="100.0">
-               <children>
-                  <Button fx:id="btnGreen" mnemonicParsing="false" onAction="#btnGreenOnActionHandler" prefHeight="35.0" prefWidth="35.0" style="-fx-background-color: green;" />
-                  <Button fx:id="btnYellow" mnemonicParsing="false" onAction="#btnYellowOnActionHandler" prefHeight="35.0" prefWidth="35.0" style="-fx-background-color: yellow;" />
-                  <Button fx:id="btnBlue" mnemonicParsing="false" onAction="#btnBlueOnActionHandler" prefHeight="35.0" prefWidth="35.0" style="-fx-background-color: blue;" />
-               </children>
-            </HBox>
-            <HBox prefHeight="49.0" prefWidth="100.0">
-               <children>
-                  <Button fx:id="btnPen" mnemonicParsing="false" onAction="#btnPenOnActionHandler" prefHeight="45.0" prefWidth="45.0" style="-fx-background-image: url('pen.png'); -fx-background-size: cover, auto;">
-                     <HBox.margin>
-                        <Insets left="3.0" right="4.0" />
-                     </HBox.margin>
-                  </Button>
-                  <Button fx:id="btnOval" mnemonicParsing="false" onAction="#btnOvalOnActionHandler" prefHeight="45.0" prefWidth="45.0" style="-fx-background-image: url('oval.png'); -fx-background-size: cover, auto;" />
-               </children>
-               <VBox.margin>
-                  <Insets />
-               </VBox.margin>
-            </HBox>
-            <HBox prefHeight="100.0" prefWidth="200.0">
-               <children>
-                  <Button fx:id="btnLine" mnemonicParsing="false" onAction="#btnLineOnActionHandler" prefHeight="45.0" prefWidth="45.0" style="-fx-background-image: url('line.png'); -fx-background-size: cover, auto;">
-                     <HBox.margin>
-                        <Insets left="3.0" right="4.0" />
-                     </HBox.margin>
-                  </Button>
-                  <Button fx:id="btnRectangle" mnemonicParsing="false" onAction="#btnRectangleOnActionHandler" prefHeight="45.0" prefWidth="45.0" style="-fx-background-image: url('rectangle.png'); -fx-background-size: cover, auto;" />
-               </children>
-            </HBox>
-         </children>
-      </VBox>
-   </right>
    <center>
-      <Pane fx:id="paneCanvas" BorderPane.alignment="CENTER">
+      <Pane fx:id="paneCanvas" prefHeight="594.0" prefWidth="903.0" BorderPane.alignment="CENTER">
          <children>
-            <Canvas fx:id="myCanvas" height="307.0" width="376.0" />
+            <Canvas fx:id="myCanvas" height="605.0" width="926.0" />
          </children>
       </Pane>
    </center>

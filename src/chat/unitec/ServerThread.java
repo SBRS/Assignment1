@@ -98,7 +98,6 @@ public class ServerThread extends Thread
 						break;
 					case ServerConstants.CANVAS_BROADCAST:
 						String canvasChange = dis.readUTF();
-						//serverController.getTextArea().appendText(remoteClient.getInetAddress()+":"+remoteClient.getPort()+"("+userName+")"+">"+canvasChange+"\n");
 						
 						for(ServerThread otherClient: connectedClients)
 						{
@@ -106,6 +105,38 @@ public class ServerThread extends Thread
 							{
 								otherClient.getDos().writeInt(ServerConstants.CANVAS_BROADCAST);
 								otherClient.getDos().writeUTF(canvasChange);
+							}
+						}
+						break;
+					case ServerConstants.IMAGE_BROADCAST:
+						int w = dis.readInt();
+						int h = dis.readInt();
+						int length = dis.readInt();
+						byte[] pixels = new byte[w*h*4];
+						for(int i=0;i<length;i++){
+						    pixels[i]=dis.readByte();
+						}
+						for(ServerThread otherClient: connectedClients)
+						{
+							if(!otherClient.equals(this))
+							{
+								otherClient.getDos().writeInt(ServerConstants.IMAGE_BROADCAST);
+								otherClient.getDos().writeInt(w);
+								otherClient.getDos().writeInt(h);
+								otherClient.getDos().writeInt(length);
+			        				for(int i=0;i<length;i++)
+			        				{
+			        				otherClient.getDos().writeByte(pixels[i]);
+			        				}
+							}
+						}
+						break;
+					case ServerConstants.CLEAR_BROADCAST:						
+						for(ServerThread otherClient: connectedClients)
+						{
+							if(!otherClient.equals(this))
+							{
+								otherClient.getDos().writeInt(ServerConstants.CLEAR_BROADCAST);
 							}
 						}
 						break;
